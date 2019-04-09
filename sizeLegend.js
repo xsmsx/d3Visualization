@@ -1,12 +1,13 @@
 export const sizeLegend = (selection, props) => {
   const {
+    colorScale,
     sizeScale,
     spacing,
     textOffset,
     numTicks,
     tickFormat
   } = props;
-  
+
   const ticks = sizeScale.ticks(numTicks)
     .filter(d => d !== 0)
     .reverse();
@@ -21,15 +22,16 @@ export const sizeLegend = (selection, props) => {
         `translate(0, ${i * spacing})`
       );
   groups.exit().remove();
-  
+
   groupsEnter.append('circle')
     .merge(groups.select('circle'))
-      .attr('r', sizeScale);
-  
+      .attr('r', sizeScale)
+      .attr('fill', colorScale);
+
   groupsEnter.append('text')
     .merge(groups.select('text'))
       .text(tickFormat)
       .attr('dy', '0.1em')
       .attr('x', d => sizeScale(d) + textOffset);
-  
+
 }

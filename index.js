@@ -1,60 +1,3 @@
-// import {
-//     select,
-//     json,
-//     tsv,
-//     geoPath,
-//     geoNaturalEarth1,
-//     zoom,
-//     event
-// } from 'd3';
-// import { feature } from 'topojson';
-//
-// const svg = select('svg');
-//
-// const projection = geoNaturalEarth1();
-// const pathGenerator = geoPath().projection(projection);
-//
-// const g = svg.append('g');
-//
-// g.append('path')
-//     .attr('class', 'sphere')
-//     .attr('d', pathGenerator({type: 'Sphere'}));
-//
-// svg.call(zoom().on('zoom', () => {
-//     g.attr('transform', event.transform);
-// }));
-//
-// Promise.all([
-//     tsv('https://unpkg.com/world-atlas@1.1.4/world/50m.tsv'),
-//     json('https://unpkg.com/world-atlas@1.1.4/world/50m.json')
-// ]).then(([tsvData, topoJSONdata]) => {
-//
-//     const countryName = tsvData.reduce((accumulator, d) => {
-//         accumulator[d.iso_n3] = d.name;
-//         return accumulator;
-//     }, {});
-//
-//     /*
-//     const countryName = {};
-//     tsvData.forEach(d => {
-//       countryName[d.iso_n3] = d.name;
-//     });
-//     */
-//
-//     const countries = feature(topoJSONdata, topoJSONdata.objects.countries);
-//     g.selectAll('path').data(countries.features)
-//         .enter().append('path')
-//         .attr('class', 'country')
-//         .attr('d', pathGenerator)
-//         .append('title')
-//         .text(d => countryName[d.id]);
-//
-// });
-
-
-
-
-
 import {
     select,
     geoPath,
@@ -70,7 +13,9 @@ import {
 } from 'd3';
 
 import { loadAndProcessData } from './loadAndProcessData';
-// import { sizeLegend } from './sizeLegend';
+import { sizeLegend } from './sizeLegend';
+import { colorLegend } from './colorLegend';
+
 
 
 // Promise.all([
@@ -112,7 +57,38 @@ svg.call(zoom().on('zoom', () => {
     g.attr('transform', event.transform);
 }));
 
+const colorScale = scaleOrdinal();
+
+const colorValue = d =>d.properties['2017'];
+
+
+loadAndProcessData().then(countries => {
+
+    colorScale
+        .domain(countries.features.map(colorValue))
+        .domain(colorScale.domain().sort().reverse())
+        .range(schemeSpectral[colorScale.domain().length]);
+
+    colorLegendG.call(colorLegend, {
+        colorScale,
+        circleRadius: 8,
+        spacing: 20,
+        textOffset: 12,
+        backgroundRectWidth: 235
+    });
+
+    g.selectAll('path').data(countries.features)
+        .enter().append('path')
+        .attr('class', 'country')
+        .attr('d', pathGenerator)
+        .attr('fill', d => colorScale(colorValue(d)))
+        .append('title')
+        .text(d => d.properties.name + ': ' + colorValue(d));
+
+});
+
 const populationFormat = format(',');
+
 
 loadAndProcessData().then(countries => {
 
@@ -148,15 +124,16 @@ loadAndProcessData().then(countries => {
 
     g.append('g')
         .attr('transform', `translate(45,215)`)
-        // .call(sizeLegend, {
-        //     sizeScale,
-        //     spacing: 45,
-        //     textOffset: 10,
-        //     numTicks: 5,
-        //     tickFormat: populationFormat
-        // })
+        .call(sizeLegend, {
+            sizeScale,
+            spacing: 45,
+            textOffset: 10,
+            numTicks: 5,
+            tickFormat: populationFormat
+        })
         .append('text')
         .attr('class', 'legend-title')
+
         .text('Population')
         .attr('y', -45)
         .attr('x', -30);
