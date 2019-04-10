@@ -50,6 +50,53 @@
         const populationFormat = d3.format(',');
 
 
+
+    var sizeLegend = (selection, props) => {
+        var {
+            sizeScale,
+            colorScale,
+            spacing,
+            textOffset,
+            numTicks,
+            tickFormat
+        } = props;
+
+        var ticks = sizeScale.ticks(numTicks)
+            .filter(d => d !== 0)
+            .reverse();
+
+        console.log(ticks);
+
+        var groups = selection.selectAll('g').data(ticks);
+
+        var groupsEnter = groups
+            .enter().append('g')
+            .attr('class', 'tick');
+        groupsEnter
+            .merge(groups)
+            .attr('transform', (d, i) =>
+                `translate(0, ${i * spacing})`
+            );
+        groups.exit().remove();
+
+        groupsEnter.append('circle')
+            .merge(groups.select('circle'))
+            .attr('r', sizeScale)
+            .attr('fill', colorScale)
+            .attr('stroke', 'none');
+
+        groupsEnter.append('text')
+            .merge(groups.select('text'))
+            .text(tickFormat)
+            .attr('dy', '0.32em')
+            .attr('x', d => sizeScale(d) + textOffset);
+
+        // groups.selectAll('g')
+        //     .exit()
+        //     .remove();
+
+    };
+
     loadAndProcessData().then(countries => {
 
         update("1990");
@@ -66,20 +113,9 @@
         }
 
         function updateMap(){
-
             g.selectAll('circle').remove();
-            g.selectAll('text').remove();
             g.selectAll('g').remove();
-
-            var sizeScale = d3.scaleSqrt()
-                .domain([0, d3.max(countries.features, radiusValue)])
-                .range([0, 8]);
-
-            var colorScale = d3.scaleQuantize()
-                .domain([0, d3.max(countries.features, function (d) {
-                    return radiusValue(d);
-                })])
-                .range(['#1a9850', '#66bd63', '#a6d96a', '#d9ef8b', '#fee08b', '#fdae61', '#f46d43', '#d73027'])
+            g.selectAll('text').remove();
 
             g.selectAll('path').data(countries.features)
                 .enter().append('path')
@@ -96,6 +132,14 @@
                         ].join(': ')
                 );
 
+            var sizeScale = d3.scaleSqrt().nice(5)
+                .domain([0,50])
+                .range([0, 8]);
+
+            var colorScale = d3.scaleQuantize().nice(5)
+                .domain([0, 50])
+                .range(['#1a9850', '#66bd63', '#a6d96a', '#d9ef8b', '#fee08b', '#fdae61', '#f46d43', '#d73027']);
+
             countries.featuresWithNEET.forEach(d => {
                 d.properties.projected = projection(d3.geoCentroid(d));
             });
@@ -107,15 +151,13 @@
                     return d;
                 });
 
-            // console.log(countries.featuresWithNEET);
-
             g.selectAll('circle').data(countries.featuresWithNEET)
                 .enter().append('circle')
                 .attr('class', 'country-circle')
                 .attr('cx', d => d.properties.projected[0])
                 .attr('cy', d => d.properties.projected[1])
                 .attr("r", 1)
-                .transition().duration(300)
+                .transition().duration(200)
                 .attr('r', d => sizeScale(radiusValue(d)))
                 .style("fill", function (d) {
                     // console.log("radius value: ", radiusValue(d));
@@ -153,56 +195,12 @@
                 .text('Youth in NEET (%)')
                 .attr('y', -35)
                 .attr('x', -30)
-                .style("fill", function (d) {
-                    if (d != undefined) return colorScale(radiusValue(d));
-                })
+                // .style("fill", function (d) {
+                //     if (d != undefined) return colorScale(radiusValue(d));
+                // })
                 .exit()
                 .remove();
              }
         });
-
-        var sizeLegend = (selection, props) => {
-            var {
-                sizeScale,
-                colorScale,
-                spacing,
-                textOffset,
-                numTicks,
-                tickFormat
-            } = props;
-
-            var ticks = sizeScale.ticks(numTicks)
-                .filter(d => d !== 0)
-                .reverse();
-
-            var groups = selection.selectAll('g').data(ticks);
-
-            var groupsEnter = groups
-                .enter().append('g')
-                .attr('class', 'tick');
-            groupsEnter
-                .merge(groups)
-                .attr('transform', (d, i) =>
-                    `translate(0, ${i * spacing})`
-                );
-            groups.exit().remove();
-
-            groupsEnter.append('circle')
-                .merge(groups.select('circle'))
-                .attr('r', sizeScale)
-                .attr('fill', colorScale)
-                .attr('stroke', 'none');
-
-            groupsEnter.append('text')
-                .merge(groups.select('text'))
-                .text(tickFormat)
-                .attr('dy', '0.32em')
-                .attr('x', d => sizeScale(d) + textOffset);
-
-            groups.selectAll('g')
-                .exit()
-                .remove();
-
-        };
 
 }(topojson,d3));
