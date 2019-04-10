@@ -21,40 +21,12 @@
                 });
 
                 var featuresWithNEET = countries.features;
-                    // .filter(d => d.properties['2017'])
-                    // .map(d => {
-                    //     d.properties['2017'] = +d.properties['2017'].replace(/ /g, '');
-                    //     return d;
-                    // });
-                // console.log(featuresWithNEET);
 
                 return {
                     features: countries.features,
                     featuresWithNEET
                 };
             });
-
-
-    //
-    // var svg = d3.select('svg');
-    //
-    // var projection = d3.geoNaturalEarth1();
-    // var pathGenerator = d3.geoPath().projection(projection);
-    // var radiusValue = d => d.properties[inputValue];
-    //
-    // var g = svg.append('g');
-    //
-    // g.append('path')
-    //     .attr('class', 'sphere')
-    //     .attr('d', pathGenerator({type: 'Sphere'}));
-    //
-    // svg.call(d3.zoom().on('zoom', () => {
-    //     g.attr('transform', d3.event.transform);
-    // }));
-    //
-    // const populationFormat = d3.format(',');
-
-    // updateMap(g);
 
         var inputValue = null;
         const time = ["pre 1990","1990","2000","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017"];
@@ -90,7 +62,6 @@
             document.getElementById("range").innerHTML= time[value] === undefined? "Select Year" : time[value];
             inputValue = time[value];
             radiusValue = d => d.properties[inputValue];
-            console.log(inputValue);
             updateMap();
         }
 
@@ -98,6 +69,7 @@
 
             g.selectAll('circle').remove();
             g.selectAll('text').remove();
+            g.selectAll('g').remove();
 
             var sizeScale = d3.scaleSqrt()
                 .domain([0, d3.max(countries.features, radiusValue)])
