@@ -49,8 +49,6 @@
 
         const populationFormat = d3.format(',');
 
-
-
     var sizeLegend = (selection, props) => {
         var {
             sizeScale,
@@ -64,8 +62,6 @@
         var ticks = sizeScale.ticks(numTicks)
             .filter(d => d !== 0)
             .reverse();
-
-        console.log(ticks);
 
         var groups = selection.selectAll('g').data(ticks);
 
@@ -121,14 +117,13 @@
                 .enter().append('path')
                 .attr('class', 'country')
                 .attr('d', pathGenerator)
-                // .attr('fill', d => d.properties[inputValue] ? '#e8e8e8' : '#fecccc')
                 .append('title')
                 .text(d =>
                     isNaN(radiusValue(d))
-                        ? 'Missing data'
+                        ? d.properties['Country Name']
                         : [
                             d.properties['Country Name'],
-                            radiusValue(d)
+                            radiusValue(d),
                         ].join(': ')
                 );
 
@@ -172,13 +167,13 @@
                 .attr("r", 1)
                 .remove();
 
-            d3.selectAll("circle").on("mouseover", function () {
-                d3.select(this).lower();
-            });
-
-            d3.selectAll("circle").on("mouseout", function () {
-                d3.select(this).raise();
-            });
+            // d3.selectAll("circle").on("mouseover", function () {
+            //     d3.select(this).lower();
+            // });
+            //
+            // d3.selectAll("circle").on("mouseout", function () {
+            //     d3.select(this).raise();
+            // });
 
             g.append('g')
                 .attr('transform', `translate(45,215)`)
