@@ -19,6 +19,8 @@ body {
 }
 
 h1{
+    padding-top: 10px;
+
     font-family: "Major Mono Display", sans-serif;
     font-size: 1.5em;
 
@@ -28,6 +30,8 @@ h1{
 
     margin-bottom: 0;
     padding-bottom: 0;
+    text-align: center;
+
 }
 
 h2 {
