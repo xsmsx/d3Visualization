@@ -7,6 +7,7 @@
                 d3.csv('./viz.csv'),
                 d3.tsv('https://unpkg.com/world-atlas@1.1.4/world/50m.tsv'),
                 d3.json('https://unpkg.com/visionscarto-world-atlas@0.0.4/world/50m.json')
+
             ])
             .then(([myData, tsvData, topoJSONdata]) => {
                 const rowById = myData.reduce((accumulator, d) => {
@@ -188,6 +189,7 @@
                 .append('text')
                 .attr('class', 'legend-title')
                 .text('Youth in NEET (%)')
+                .style('stroke', 'white')
                 .attr('y', -35)
                 .attr('x', -30)
                 // .style("fill", function (d) {
