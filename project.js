@@ -49,8 +49,6 @@
         var filterFloor = 0;
         var filterCeiling = 100;
 
-
-
     loadAndProcessData().then(countries => {
 
         var sizeLegend = (selection, props) => {
@@ -88,9 +86,13 @@
                 .attr('fill-opacity', '0.6')
                 .attr('stroke', 'none')
                 .on("mousedown", function(d){
-                    // console.log(d); // shows which object you are hovering over
+                    d3.select(this)
+                        .attr('fill-opacity', '1')
+                        .transition().duration(1000)
+                        .attr('fill-opacity', '0.6')
                     onMouseDown(d);
                 });
+
 
             groupsEnter.append('text')
                 .merge(groups.select('text'))
@@ -216,19 +218,28 @@
                 })
                 .append('text')
                 .attr('class', 'legend-title')
-                .text('NEET % in Youth')
+                .text('All NEET in Youth (%)')
                 .style('stroke', 'none')
                 .style('fill', '#BCC6CC')
                 .attr('y', -35)
-                .attr('x', -30)
+                .attr('x', -45)
+                .on("mouseover", function(d) {
+                    d3.select(this).style("fill", "white");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).style("fill", "#BCC6CC");
+                })
+                .on("mousedown",function(){
+                    onMouseDown(100);
+                })
                 .exit()
                 .remove();
              }
 
              function onMouseDown(ceiling){
                 filterCeiling = ceiling === 50? 100 : ceiling;
-                filterFloor = ceiling - 10;
-                update();
+                filterFloor = ceiling === 100? 0: ceiling - 10;
+                update(time.indexOf(inputValue));
              }
 
         });

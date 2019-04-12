@@ -67,7 +67,7 @@ div#div_buttons {
 button {
     position:relative;
     top:50%;
-    left:40%;
+    left:35%;
     font-family: "Major Mono Display", sans-serif;
     font-size: 1.5em;
     color: #BCC6CC;
@@ -138,10 +138,15 @@ body {
     pointer-events: none;
 }
 .legend-circle:hover {
+    cursor:pointer;
     fill-opacity: 1;
 }
-.legend-text:hover{
+.legend-title:hover{
+    cursor:pointer;
+    color:white;
     fill: white;
+    background: white;
+    stroke:white;
 }
 #sliderContainer {
     font-family: "Major Mono Display", sans-serif;
