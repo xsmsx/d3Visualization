@@ -114,6 +114,7 @@
             let i = 0, howManyTimes = 12;
             function f() {
                 i++;
+                document.getElementById("timeslide").value = i.toString();
                 update(i);
                 if( i < howManyTimes ){
                     setTimeout( f, 1700 );
