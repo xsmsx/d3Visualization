@@ -6,9 +6,12 @@
             .all([
                 d3.csv('./viz.csv'),
                 d3.tsv('https://unpkg.com/world-atlas@1.1.4/world/50m.tsv'),
-                d3.json('https://unpkg.com/visionscarto-world-atlas@0.0.4/world/50m.json')
+                // d3.json('https://unpkg.com/visionscarto-world-atlas@0.0.4/world/50m.json')
+                d3.json("https://unpkg.com/world-atlas@1/world/110m.json")
 
-            ])
+
+
+                ])
             .then(([myData, tsvData, topoJSONdata]) => {
                 const rowById = myData.reduce((accumulator, d) => {
                     accumulator[d['Country Code']] = d;
@@ -36,7 +39,7 @@
 
         const projection = d3.geoNaturalEarth1();
         const pathGenerator = d3.geoPath().projection(projection);
-        var radiusValue = d => d.properties[inputValue];
+        let radiusValue = d => d.properties[inputValue];
 
         const g = svg.append('g');
 
@@ -88,10 +91,6 @@
             .attr('dy', '0.32em')
             .attr('x', d => sizeScale(d) + textOffset);
 
-        // groups.selectAll('g')
-        //     .exit()
-        //     .remove();
-
     };
 
     loadAndProcessData().then(countries => {
@@ -105,6 +104,7 @@
         function update(value) {
             document.getElementById("range").innerHTML= time[value] === undefined? "Select Year" : time[value];
             inputValue = time[value];
+            console.log(inputValue);
             radiusValue = d => d.properties[inputValue];
             updateMap();
         }
@@ -114,27 +114,6 @@
             g.selectAll('g').remove();
             g.selectAll('text').remove();
 
-            g.selectAll('path').data(countries.features)
-                .enter().append('path')
-                .attr('class', 'country')
-                .attr('d', pathGenerator)
-                .append('title')
-                .text(d =>
-                    isNaN(radiusValue(d))
-                        ? d.properties['Country Name']
-                        : [
-                            d.properties['Country Name'],
-                            radiusValue(d),
-                        ].join(': ')
-                );
-
-            var sizeScale = d3.scaleSqrt().nice(5)
-                .domain([0,50])
-                .range([0, 8]);
-
-            var colorScale = d3.scaleQuantize().nice(5)
-                .domain([0, 50])
-                .range(['#1a9850', '#66bd63', '#a6d96a', '#d9ef8b', '#fee08b', '#fdae61', '#f46d43', '#d73027']);
 
             countries.featuresWithNEET.forEach(d => {
                 d.properties.projected = projection(d3.geoCentroid(d));
@@ -146,6 +125,47 @@
                     d.properties[inputValue] = +d.properties[inputValue];
                     return d;
                 });
+
+            console.log(countries);
+
+            var countryPath = g.selectAll('path').data(countries.features);
+
+            countryPath
+                .enter()
+                .append('path')
+                .attr('class', 'country')
+                .attr('d', pathGenerator)
+                .append('title');
+
+            countryPath.select("title")
+                // .attr('onMouseover', function)
+                .text(function (d){
+                    console.log(inputValue);
+                    console.log(d.properties[inputValue]);
+                        return [
+                            d.properties['Country Name'],
+                            radiusValue(d),
+                        ].join(': ')
+                    }
+                );
+
+
+                // .text(d =>
+                //     isNaN(radiusValue(d))
+                //         ? d.properties['Country Name']
+                //         : [
+                //             d.properties['Country Name'],
+                //             radiusValue(d),
+                //         ].join(': ')
+                // );
+
+            var sizeScale = d3.scaleSqrt().nice(5)
+                .domain([0,50])
+                .range([0, 8]);
+
+            var colorScale = d3.scaleQuantize().nice(5)
+                .domain([0, 50])
+                .range(['#1a9850', '#66bd63', '#a6d96a', '#d9ef8b', '#fee08b', '#fdae61', '#f46d43', '#d73027']);
 
             g.selectAll('circle').data(countries.featuresWithNEET)
                 .enter().append('circle')
@@ -188,7 +208,7 @@
                 })
                 .append('text')
                 .attr('class', 'legend-title')
-                .text('Youth in NEET (%)')
+                .text('NEET % in Youth')
                 .style('stroke', 'white')
                 .attr('y', -35)
                 .attr('x', -30)

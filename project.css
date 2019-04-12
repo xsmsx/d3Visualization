@@ -10,8 +10,8 @@ html {
 
     font-family: "Sarabun", sans-serif;
     font-weight: 300;
-    color: white;
-    letter-spacing: 0.1em;
+    color: #BCC6CC;
+    letter-spacing: 0.05em;
 }
 
 body {
@@ -24,7 +24,7 @@ h1{
     font-family: "Major Mono Display", sans-serif;
     font-size: 1.5em;
 
-    color: white;
+    color: #BCC6CC;
     letter-spacing: normal;
     text-transform: lowercase;
 
@@ -96,7 +96,7 @@ button:focus {
 .tick path,
 .tick line {
     fill: none;
-    stroke: white;
+    stroke: #BCC6CC;
     shape-rendering: crispEdges;
 }
 .domain text,
@@ -106,10 +106,10 @@ button:focus {
     font-size: 1em;
 }
 .map{
-    background: white;
+    background: #BCC6CC;
 }
 svg{
-    background: white;
+    background: #BCC6CC;
 }
 body {
     margin: 0px;
@@ -120,15 +120,18 @@ body {
 }
 .country {
     fill: #BCC6CC;
+    fill-opacity: 0.9;
     stroke: antiquewhite;
-    stroke-opacity: 0.1;
+    stroke-opacity: 0.3;
 }
 .country:hover {
-    fill: #7a7a7a;
+    fill: #333d43;
+    fill-opacity: 0.75;
+    stroke:none;
 }
 #sliderContainer {
     font-family: "Major Mono Display", sans-serif;
-    color: white;
+    color: #BCC6CC;
     position: relative;
     text-align:center;
     padding-top: 10px;
@@ -150,73 +153,76 @@ input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 16px;
     cursor: pointer;
-    animate: 0.2s;
-    box-shadow: 0px 0px 0px #000000;
-    background: #BCC6CC;
-    border-radius: 25px;
-    border: 1px solid #8A8A8A;
+    animate: 0.5s;
+    box-shadow: 0px 0px 0px #BCC6CC;
+    background: #1f2833;
+    border-radius: 20px;
+    border: 1px #1f2833;
+    stroke-opacity: 0.9;
 }
 input[type=range]::-webkit-slider-thumb {
-    box-shadow: 1px 1px 1px #828282;
-    border: 1px solid #8A8A8A;
+    /*box-shadow: 1px 1px 1px #202020;*/
+    border: 0px solid #1f2833;
     height: 24px;
-    width: 35px;
-    border-radius: 6px;
-    background: #DADADA;
+    width: 30px;
+    border-radius: 20px;
+    background: #BCC6CC;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -5px;
 }
 input[type=range]:focus::-webkit-slider-runnable-track {
-    background: darkgrey;
+    /*background: darkgrey;*/
+    background: #181e27;
 }
 input[type=range]::-moz-range-track {
     width: 100%;
     height: 16px;
     cursor: pointer;
     animate: 0.2s;
-    box-shadow: 0px 0px 0px #000000;
-    background: #B6B6B6;
+    box-shadow: 0px 0px 0px #BCC6CC;
+    background: #1f2833;
     border-radius: 25px;
-    border: 1px solid #8A8A8A;
+    border: 0px solid #1f2833;
+    stroke-opacity: 0.9;
 }
 input[type=range]::-moz-range-thumb {
-    box-shadow: 1px 1px 1px #828282;
-    border: 1px solid #8A8A8A;
+    box-shadow: 1px 1px 1px #202020;
+    border: 0px solid #1f2833;
     height: 24px;
     width: 35px;
-    border-radius: 6px;
-    background: #BCC6CC;
+    border-radius: 20px;
+    background: #1f2833;
     cursor: pointer;
 }
 input[type=range]::-ms-track {
     width: 100%;
     height: 16px;
     cursor: pointer;
-    animate: 0.2s;
+    animate: 0.1s;
     background: transparent;
     border-color: transparent;
     color: transparent;
 }
 input[type=range]::-ms-fill-lower {
     background: #BCC6CC;
-    border: 1px solid #BCC6CC;
+    border: 0px solid #BCC6CC;
     border-radius: 50px;
     box-shadow: 0px 0px 0px #000000;
 }
 input[type=range]::-ms-fill-upper {
     background: #BCC6CC;
-    border: 1px solid #BCC6CC;
+    border: 0px solid #1f2833;
     border-radius: 50px;
     box-shadow: 0px 0px 0px #000000;
 }
 input[type=range]::-ms-thumb {
     margin-top: 1px;
-    box-shadow: 1px 1px 1px #828282;
-    border: 1px solid #8A8A8A;
+    /*box-shadow: 1px 1px 1px #202020;*/
+    border: 0px solid #1f2833;
     height: 24px;
     width: 35px;
-    border-radius: 6px;
+    border-radius: 60px;
     background: #BCC6CC;
     cursor: pointer;
 }
@@ -227,6 +233,6 @@ input[type=range]:focus::-ms-fill-upper {
     background: #BCC6CC;
 }
 .legend-title{
-    color: white;
-    stroke: white;
+    color: #BCC6CC;
+    stroke: #BCC6CC;
 }
