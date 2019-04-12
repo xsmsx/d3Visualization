@@ -6,10 +6,7 @@
             .all([
                 d3.csv('./viz.csv'),
                 d3.tsv('https://unpkg.com/world-atlas@1.1.4/world/50m.tsv'),
-                // d3.json('https://unpkg.com/visionscarto-world-atlas@0.0.4/world/50m.json')
                 d3.json("https://unpkg.com/world-atlas@1/world/110m.json")
-
-
 
                 ])
             .then(([myData, tsvData, topoJSONdata]) => {
@@ -33,14 +30,10 @@
             });
 
         var inputValue = null;
-        const time = ["pre 1990","1990","2000","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017"];
-
+        const time = ["1990","1990","2000","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017"];
         const svg = d3.select('svg');
-
         const projection = d3.geoNaturalEarth1();
         const pathGenerator = d3.geoPath().projection(projection);
-        let radiusValue = d => d.properties[inputValue];
-
         const g = svg.append('g');
 
         g.append('path')
@@ -51,61 +44,90 @@
             g.attr('transform', d3.event.transform);
         }));
 
-        const populationFormat = d3.format(',');
+        const populationFormat = d3.format('.2g');
+        let radiusValue = d => d.properties[inputValue];
+        var filterFloor = 0;
+        var filterCeiling = 100;
 
-    var sizeLegend = (selection, props) => {
-        var {
-            sizeScale,
-            colorScale,
-            spacing,
-            textOffset,
-            numTicks,
-            tickFormat
-        } = props;
 
-        var ticks = sizeScale.ticks(numTicks)
-            .filter(d => d !== 0)
-            .reverse();
-
-        var groups = selection.selectAll('g').data(ticks);
-
-        var groupsEnter = groups
-            .enter().append('g')
-            .attr('class', 'tick');
-        groupsEnter
-            .merge(groups)
-            .attr('transform', (d, i) =>
-                `translate(0, ${i * spacing})`
-            );
-        groups.exit().remove();
-
-        groupsEnter.append('circle')
-            .merge(groups.select('circle'))
-            .attr('r', sizeScale)
-            .attr('fill', colorScale)
-            .attr('stroke', 'none');
-
-        groupsEnter.append('text')
-            .merge(groups.select('text'))
-            .text(tickFormat)
-            .attr('dy', '0.32em')
-            .attr('x', d => sizeScale(d) + textOffset);
-
-    };
 
     loadAndProcessData().then(countries => {
 
+        var sizeLegend = (selection, props) => {
+            var {
+                sizeScale,
+                colorScale,
+                spacing,
+                textOffset,
+                numTicks,
+                tickFormat
+            } = props;
+
+            var ticks = sizeScale.ticks(numTicks)
+                .filter(d => d !== 0)
+                .reverse();
+
+            var groups = selection.selectAll('g').data(ticks);
+
+            var groupsEnter = groups
+                .enter().append('g')
+                .attr('class', 'tick');
+
+            groupsEnter
+                .merge(groups)
+                .attr('transform', (d, i) =>
+                    `translate(0, ${i * spacing})`
+                );
+            groups.exit().remove();
+
+            groupsEnter.append('circle')
+                .attr('class', 'legend-circle')
+                .merge(groups.select('circle'))
+                .attr('r', sizeScale)
+                .attr('fill', colorScale)
+                .attr('fill-opacity', '0.6')
+                .attr('stroke', 'none')
+                .on("mousedown", function(d){
+                    // console.log(d); // shows which object you are hovering over
+                    onMouseDown(d);
+                });
+
+            groupsEnter.append('text')
+                .merge(groups.select('text'))
+                .text(tickFormat)
+                .attr('class', 'legend-text')
+                .attr('dy', '0.32em')
+                .attr('x', d => sizeScale(d) + textOffset)
+                .attr('fill','#BCC6CC');
+
+        };
+
         update("1990");
-        // when the input range changes update the rectangle
+
         d3.select("#timeslide").on("input", function() {
             update(+this.value);
         });
 
+        d3.select("#play").on("click", function(){
+            let i = 0, howManyTimes = 12;
+            function f() {
+                i++;
+                update(i);
+                if( i < howManyTimes ){
+                    setTimeout( f, 1700 );
+                }
+            }
+            f();
+
+        });
+
         function update(value) {
             document.getElementById("range").innerHTML= time[value] === undefined? "Select Year" : time[value];
-            inputValue = time[value];
-            console.log(inputValue);
+            inputValue = time[parseInt(value)];
+            // console.log(typeof(value), parseInt(value));
+            // console.log("value: ", typeof(inputValue), inputValue);
             radiusValue = d => d.properties[inputValue];
+            // console.log("input: ", inputValue);
             updateMap();
         }
 
@@ -114,19 +136,18 @@
             g.selectAll('g').remove();
             g.selectAll('text').remove();
 
-
             countries.featuresWithNEET.forEach(d => {
                 d.properties.projected = projection(d3.geoCentroid(d));
             });
 
             countries.featuresWithNEET = countries.features
                 .filter(d => d.properties[inputValue])
+                .filter(d => d.properties[inputValue] <= filterCeiling)
+                .filter(d => d.properties[inputValue] >= filterFloor)
                 .map(d => {
                     d.properties[inputValue] = +d.properties[inputValue];
                     return d;
                 });
-
-            console.log(countries);
 
             var countryPath = g.selectAll('path').data(countries.features);
 
@@ -139,25 +160,15 @@
 
             countryPath.select("title")
                 // .attr('onMouseover', function)
-                .text(function (d){
-                    console.log(inputValue);
-                    console.log(d.properties[inputValue]);
-                        return [
+                .text( d =>
+                    isNaN(radiusValue(d))
+                        ? "Missing Data"
+                        : [
                             d.properties['Country Name'],
-                            radiusValue(d),
+                            d3.format(".2f")(radiusValue(d))
                         ].join(': ')
-                    }
+
                 );
-
-
-                // .text(d =>
-                //     isNaN(radiusValue(d))
-                //         ? d.properties['Country Name']
-                //         : [
-                //             d.properties['Country Name'],
-                //             radiusValue(d),
-                //         ].join(': ')
-                // );
 
             var sizeScale = d3.scaleSqrt().nice(5)
                 .domain([0,50])
@@ -173,28 +184,25 @@
                 .attr('cx', d => d.properties.projected[0])
                 .attr('cy', d => d.properties.projected[1])
                 .attr("r", 1)
-                .transition().duration(200)
+                .transition().duration(350)
                 .attr('r', d => sizeScale(radiusValue(d)))
                 .style("fill", function (d) {
                     // console.log("radius value: ", radiusValue(d));
                     return colorScale(radiusValue(d));
                 })
-                .style("fill-opacity", "0.85")
                 .style("stroke", "none");
 
-            g.selectAll('circle').data(countries.featuresWithNEET)
-                .exit()
-                .transition().duration(200)
-                .attr("r", 1)
-                .remove();
-
-            // d3.selectAll("circle").on("mouseover", function () {
-            //     d3.select(this).lower();
-            // });
-            //
-            // d3.selectAll("circle").on("mouseout", function () {
-            //     d3.select(this).raise();
-            // });
+            d3.selectAll("circle")
+                .on("mouseover", function () {
+                    d3.select(this)
+                        .append("svg:title")
+                        .text(function(d) {
+                            return [
+                                d.properties['Country Name'],
+                                radiusValue(d),
+                            ].join(': ');
+                        })
+                });
 
             g.append('g')
                 .attr('transform', `translate(45,215)`)
@@ -209,15 +217,20 @@
                 .append('text')
                 .attr('class', 'legend-title')
                 .text('NEET % in Youth')
-                .style('stroke', 'white')
+                .style('stroke', 'none')
+                .style('fill', '#BCC6CC')
                 .attr('y', -35)
                 .attr('x', -30)
-                // .style("fill", function (d) {
-                //     if (d != undefined) return colorScale(radiusValue(d));
-                // })
                 .exit()
                 .remove();
              }
+
+             function onMouseDown(ceiling){
+                filterCeiling = ceiling === 50? 100 : ceiling;
+                filterFloor = ceiling - 10;
+                update();
+             }
+
         });
 
 }(topojson,d3));

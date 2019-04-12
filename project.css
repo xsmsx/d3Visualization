@@ -19,7 +19,6 @@ body {
 }
 
 h1{
-    padding-top: 10px;
 
     font-family: "Major Mono Display", sans-serif;
     font-size: 1.5em;
@@ -37,6 +36,7 @@ h1{
 h2 {
     font-family: "Major Mono Display", sans-serif;
     font-size: 1.5em;
+    color: #BCC6CC;
     letter-spacing: normal;
     text-transform: lowercase;
     text-align: center;
@@ -62,21 +62,26 @@ div#div_visuals {
     padding: 10px;
 }
 div#div_buttons {
-    padding: 20px;
+    text-align:center;
 }
 button {
-    background: beige;
+    position:relative;
+    top:50%;
+    left:40%;
+    font-family: "Major Mono Display", sans-serif;
+    font-size: 1.5em;
+    color: #BCC6CC;
+    letter-spacing: normal;
+    text-transform: lowercase;
+    text-align: center;
     border: none;
     height: 30px;
-    padding: 0px 10px;
-
-    font-family: "Sarabun", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    letter-spacing: 0.1em;
+    alignment: center;
+    background: #1f2833;
 }
 button:hover {
-    background: darkturquoise;
+    background: white;
+    color: black;
     cursor: pointer;
 }
 button:focus {
@@ -120,14 +125,23 @@ body {
 }
 .country {
     fill: #BCC6CC;
-    fill-opacity: 0.9;
+    fill-opacity: 0.8;
     stroke: antiquewhite;
-    stroke-opacity: 0.3;
+    stroke-opacity: 0.2;
 }
 .country:hover {
     fill: #333d43;
     fill-opacity: 0.75;
     stroke:none;
+}
+.country-circle {
+    pointer-events: none;
+}
+.legend-circle:hover {
+    fill-opacity: 1;
+}
+.legend-text:hover{
+    fill: white;
 }
 #sliderContainer {
     font-family: "Major Mono Display", sans-serif;
